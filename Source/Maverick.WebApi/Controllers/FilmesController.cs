@@ -51,5 +51,29 @@ namespace Maverick.WebApi.Controllers
 
             return Ok(filmesGetResults);
         }
+
+
+        /// <summary>
+        /// InserirFilme filme.
+        /// </summary>
+        /// <param name="filmesPost">
+        ///     Dados do filme a ser inserido
+        /// </param>
+        /// <response code="200">Filme inserido com sucesso.</response>
+        /// <response code="400">
+        ///     Parametros incorretos ou limite de utilização excedido.
+        /// </response>
+        /// <response code="500">Erro interno.</response>
+        [HttpPost, AllowAnonymous]
+        [ProducesResponseType(typeof(FilmesGetResult), 200)]
+        [ProducesResponseType(typeof(CoreException<CoreError>), 400)]
+        [ProducesResponseType(typeof(InternalError), 500)]
+        public async Task<IActionResult> InserirFilmesAsync([FromBody] FilmesPost filmesPost)
+        {
+            Filme filme = mapper.Map<FilmesPost, Filme>(filmesPost);
+            var sucesso = await filmesService.InserirFilmeAsync(filme);
+
+            return Ok(sucesso);
+        }
     }
 }

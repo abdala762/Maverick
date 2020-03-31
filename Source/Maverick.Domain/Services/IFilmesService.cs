@@ -1,4 +1,4 @@
-﻿using Maverick.Domain.Exceptions;
+using Maverick.Domain.Exceptions;
 using Maverick.Domain.Models;
 using Otc.DomainBase.Exceptions;
 using System.Collections.Generic;
@@ -18,5 +18,16 @@ namespace Maverick.Domain.Services
         /// <exception cref="BuscarFilmesCoreException" />
         /// <exception cref="ModelValidationException" />
         Task<IEnumerable<Filme>> ObterFilmesAsync(Pesquisa pesquisa);
+
+        /// <summary>
+        /// Insere um filme no banco de dados.
+        /// </summary>
+        /// <param name="filme">Filme a ser inserido.</param>
+        /// <returns>
+        ///     Se a inserção foi realizada corretamente
+        /// </returns>
+        /// <exception cref="InserirFilmesCoreException" />
+        /// <exception cref="ModelValidationException" />
+        Task<IEnumerable<Filme>> InserirFilmeAsync(Filme filme);
     }
 }

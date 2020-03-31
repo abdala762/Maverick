@@ -44,5 +44,10 @@ namespace Maverick.Application
 
             return resultado;
         }
+
+        Task<IEnumerable<Filme>> IFilmesService.InserirFilmeAsync(Filme filme)
+        {
+            throw new NotImplementedException();
+        }
     }
 }
