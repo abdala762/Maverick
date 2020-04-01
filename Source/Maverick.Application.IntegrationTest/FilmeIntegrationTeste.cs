@@ -3,7 +3,11 @@ using System.Net.Http;
 using System.Text;
 using System.Threading.Tasks;
 using Maverick.Application.IntegrationTest.Configuracoes;
+using Maverick.Application.IntegrationTest.Services;
 using Maverick.Domain.Models;
+using Maverick.Domain.Services;
+using Microsoft.AspNetCore.TestHost;
+using Microsoft.Extensions.DependencyInjection;
 using Newtonsoft.Json;
 using Xunit;
 
@@ -13,20 +17,33 @@ namespace Maverick.Application.IntegrationTest
     {
         public FilmeIntegrationTeste(CustomWebApplicationFactory factory) : base(factory)
         {
+            Client = factory.WithWebHostBuilder(builder =>
+            {
+                builder.ConfigureTestServices(services =>
+                {
+                    services.AddScoped<IFilmesService, FilmesServiceTests>();
+                });
+            })
+            .CreateClient();
         }
 
+
+
         [Fact]
-        private async Task BuscarFilmes()
+        private async Task BuscarFilmesAsync()
         {
 
-            var result = await Client.GetStringAsync($"/v1/Filmes?TermoPesquisa=a&AnoLancamento=2012")
+            var response = await Client.GetAsync($"/v1/Filmes?TermoPesquisa=a&AnoLancamento=2012")
                                       .ConfigureAwait(false);
 
-            Assert.NotNull(result);
+            response.EnsureSuccessStatusCode();
+            
+            IEnumerable<Filme> filmes = JsonConvert.DeserializeObject<IEnumerable<Filme>>(await response.Content.ReadAsStringAsync());
+            Assert.NotNull(filmes);
         }
 
         [Fact]
-        private async Task InserirFilme()
+        private async Task InserirFilmeAsync()
         {
             Filme filme = new Filme()
             {
@@ -40,6 +57,9 @@ namespace Maverick.Application.IntegrationTest
             var response = await Client.PostAsync("/v1/Filmes", contentString)
                 .ConfigureAwait(false);
             response.EnsureSuccessStatusCode();
+
+            IEnumerable<Filme> filmes = JsonConvert.DeserializeObject<IEnumerable<Filme>>(await response.Content.ReadAsStringAsync());
+            Assert.NotNull(filmes);
         }
 
     }

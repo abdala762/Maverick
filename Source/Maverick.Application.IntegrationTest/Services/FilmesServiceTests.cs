@@ -10,18 +10,17 @@ using Maverick.Domain.Services;
 
 namespace Maverick.Application.IntegrationTest.Services
 {
-    internal class FilmesServiceTests : BaseService, IFilmesService 
+    internal class FilmesServiceTests : IFilmesService 
     {
+        private const string INSERT_SQL = "INSERT INTO Filme (Nome, Descricao) Values (@Nome,@Descricao);";
+        private const string SELECT_SQL = "Select * FROM Filme";
+        private const string SELECT_WITH_WHERE_SQL = "Select * FROM Filme WHERE Nome = @Nome AND DataLancamento=@DataLancamento";
+
         public async Task<IEnumerable<Filme>> InserirFilmeAsync(Filme filme)
         {
-
-            string sql = "INSERT INTO Filme (Nome, Descricao) Values (@Nome,@Descricao);";
-
             var conn = InMemoryDatabase.GetInMemoryOpenSqliteConnection();
-            conn.Execute(sql, new { Nome = filme.Nome, Descricao = filme.Descricao });
-            var filmes = conn.Query<Filme>("Select * FROM Filme").ToList();
-
-            return filmes;
+            conn.Execute(INSERT_SQL, new { filme.Nome, filme.Descricao });
+            return await conn.QueryAsync<Filme>(SELECT_SQL);
         }
 
         public async Task<IEnumerable<Filme>> ObterFilmesAsync(Pesquisa pesquisa)
@@ -29,11 +28,8 @@ namespace Maverick.Application.IntegrationTest.Services
 
             var conn = InMemoryDatabase.GetInMemoryOpenSqliteConnection();
 
-
-            var filmes = conn.Query<Filme>("Select * FROM Filme WHERE Nome = @Nome AND DataLancamento=@DataLancamento",
-                new { Nome = pesquisa.TermoPesquisa, DataLancamento = pesquisa.AnoLancamento }).ToList();
-
-            return filmes;
+            return await conn.QueryAsync<Filme>(SELECT_WITH_WHERE_SQL,
+                new { Nome = pesquisa.TermoPesquisa, DataLancamento = pesquisa.AnoLancamento });
         }
     }
 }

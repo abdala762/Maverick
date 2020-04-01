@@ -14,22 +14,14 @@ namespace Maverick.Application.IntegrationTest
     {
 
         private readonly CustomWebApplicationFactory _factory;
-        public HttpClient Client { get; }
+        public HttpClient Client { get; set; }
 
         public IntegrationBaseTest(CustomWebApplicationFactory factory)
         {
 
             InMemoryDatabase.CreateDatabase();
             this._factory = factory;
-            Client = this._factory.WithWebHostBuilder(builder =>
-            {
-                builder.ConfigureTestServices(services =>
-                {
-                    services.AddScoped<IFilmesService, FilmesServiceTests>();
-                });
-            })
-            .CreateClient();
         }
-
+       
     }
 }
