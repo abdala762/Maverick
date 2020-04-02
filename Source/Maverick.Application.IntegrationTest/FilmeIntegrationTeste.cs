@@ -35,7 +35,7 @@ namespace Maverick.Application.IntegrationTest
 
         [Fact]
         [Trait(nameof(FilmesController.GetFilmesAsync), "Sucesso")]
-        private async Task BuscarFilmesAsync()
+        private async Task BuscarFilmesAsyncSucesso()
         {
 
             var response = await Client.GetAsync($"/v1/Filmes?TermoPesquisa=a&AnoLancamento=2012")
@@ -48,19 +48,16 @@ namespace Maverick.Application.IntegrationTest
             filmes.Should().BeEmpty();
         }
 
+
         [Fact]
         [Trait(nameof(FilmesController.GetFilmesAsync), "Erro")]
-        private async Task BuscarFilmesAsyncError()
+        private async Task BuscarFilmesAsyncErro()
         {
 
             var response = await Client.GetAsync($"/v1/Filmes")
                                       .ConfigureAwait(false);
 
-            response.EnsureSuccessStatusCode();
-
-            IEnumerable<Filme> filmes = JsonConvert.DeserializeObject<IEnumerable<Filme>>(await response.Content.ReadAsStringAsync());
-            Assert.NotNull(filmes);
-            filmes.Should().BeEmpty();
+            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
         }
 
 
@@ -87,7 +84,22 @@ namespace Maverick.Application.IntegrationTest
             Assert.NotNull(filmes);
 
             filmes.Should().HaveCount(1);
-            filmes.First().Should().Be(filme);
+            filmes.First().Should().BeEquivalentTo(filme);
+        }
+
+        [Fact]
+        [Trait(nameof(FilmesController.InserirFilmesAsync), "Erro")]
+        private async Task InserirFilmeAsyncErro()
+        {
+            Filme filme =null;
+
+            var jsonContent = JsonConvert.SerializeObject(filme);
+            var contentString = new StringContent(jsonContent, Encoding.UTF8, "application/json");
+
+            var response = await Client.PostAsync("/v1/Filmes", contentString)
+                .ConfigureAwait(false);
+
+            Assert.Equal(System.Net.HttpStatusCode.BadRequest, response.StatusCode);
         }
 
     }
