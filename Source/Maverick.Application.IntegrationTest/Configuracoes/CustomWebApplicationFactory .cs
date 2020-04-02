@@ -14,17 +14,5 @@ namespace Maverick.Application.IntegrationTest.Configuracoes
 {
     public class CustomWebApplicationFactory : WebApplicationFactory<Startup>
     {
-        protected override void ConfigureWebHost(IWebHostBuilder builder)
-        {
-            builder.ConfigureAppConfiguration((context, config) =>
-            {
-                
-            }).ConfigureServices(services =>
-            {
-
-                services.AddScoped<IFilmesService, FilmesServiceTests>();
-
-            });
-        }
     }
 }

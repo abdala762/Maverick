@@ -6,7 +6,7 @@ namespace Maverick.Application.IntegrationTest
 {
     internal class DatabaseScripts
     {
-        public static readonly string CREATE_FILME_DATABASE =
+        public const string CREATE_FILME_DATABASE =
             @"CREATE TABLE IF NOT EXISTS  Filme (
         Id INTEGER PRIMARY KEY AUTOINCREMENT, 
         Nome VARCHAR(50)  NULL, 
